@@ -6,67 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import ProductCard from '@/components/ProductCard';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-
-// Mock products data
-const getCategoryProducts = (category: string) => {
-  const allProducts = {
-    iphones: [
-      {
-        id: '4',
-        image: 'https://api.builder.io/api/v1/image/assets/TEMP/75c78a6443119fe0219f6af2bd9a34c7460ab271?width=428',
-        title: 'iPhone 16 Pro Max 256GB',
-        rating: { stars: 5, count: 30 },
-        currentPrice: 'R$ 6.999,00'
-      },
-      {
-        id: '5',
-        image: 'https://api.builder.io/api/v1/image/assets/TEMP/75c78a6443119fe0219f6af2bd9a34c7460ab271?width=428',
-        title: 'iPhone 16 Pro 128GB',
-        rating: { stars: 5, count: 15 },
-        currentPrice: 'R$ 5.999,00'
-      }
-    ],
-    airpods: [
-      {
-        id: '2',
-        image: 'https://api.builder.io/api/v1/image/assets/TEMP/0357f22904a329ce22a933a0742af8a8455dbc75?width=400',
-        title: 'Apple AirPods Pro 2° Geração - USB-C',
-        rating: { stars: 5, count: 110 },
-        originalPrice: 'R$ 1.599,00',
-        currentPrice: 'R$ 1.499,00'
-      }
-    ],
-    acessorios: [
-      {
-        id: '1',
-        image: 'https://api.builder.io/api/v1/image/assets/TEMP/cf4bbbd0fe128753a13fe6d9116d7ea7c6509247?width=400',
-        title: 'AirTag : Pacote com 4 unidades',
-        rating: { stars: 5, count: 28 },
-        originalPrice: 'R$ 649,00',
-        currentPrice: 'R$ 609,00'
-      },
-      {
-        id: '3',
-        image: 'https://api.builder.io/api/v1/image/assets/TEMP/40d165e9bbf0d0a5846ddcde88cbbb55766cf6a5?width=400',
-        title: 'Apple Pencil (USB-C)',
-        rating: { stars: 5, count: 11 },
-        originalPrice: 'R$ 699,00',
-        currentPrice: 'R$ 649,00'
-      }
-    ],
-    macs: [
-      {
-        id: '6',
-        image: 'https://api.builder.io/api/v1/image/assets/TEMP/8a3871dd26b4bf679804327d522477f1c6530126?width=428',
-        title: 'Mac Mini M4, 16GB de Ram, 256GB SSD',
-        rating: { stars: 5, count: 46 },
-        currentPrice: 'R$ 5.199,00'
-      }
-    ]
-  };
-
-  return allProducts[category as keyof typeof allProducts] || [];
-};
+import { products as allProducts } from '@/data/products';
 
 const getCategoryName = (category: string) => {
   const names = {
@@ -104,8 +44,8 @@ const CategoryPage: React.FC = () => {
     );
   }
 
-  const products = getCategoryProducts(category);
   const categoryName = getCategoryName(category);
+  const products = allProducts.filter(p => p.category.toLowerCase() === category.toLowerCase());
 
   return (
     <div className="min-h-screen bg-background">
@@ -185,15 +125,16 @@ const CategoryPage: React.FC = () => {
               : 'grid-cols-1'
           }`}>
             {products.map((product) => (
-              <Link key={product.id} to={`/produto/${product.id}`}>
-                <ProductCard
-                  image={product.image}
-                  title={product.title}
-                  rating={product.rating}
-                  originalPrice={'originalPrice' in product ? product.originalPrice as string : undefined}
-                  currentPrice={product.currentPrice}
-                />
-              </Link>
+              <ProductCard
+                key={product.id}
+                image={product.image}
+                title={product.title}
+                rating={product.rating}
+                originalPrice={product.originalPrice}
+                price={product.price}
+                id={product.id}
+                link={product.link}
+              />
             ))}
           </div>
         ) : (

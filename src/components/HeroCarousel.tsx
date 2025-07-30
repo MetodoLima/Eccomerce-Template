@@ -1,8 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+const slides = [
+  {
+    image: "/Figures/Capa 1-EccomerceIphone.svg",
+    alt: "iPad Air M3"
+  },
+  {
+    image: "/Figures/Capa2-EccomerceIphone.svg",
+    alt: "iPhone 16 Pro Max"
+  }
+];
 
 const HeroCarousel: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const totalSlides = 9;
+  const totalSlides = slides.length;
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % totalSlides);
@@ -32,11 +43,18 @@ const HeroCarousel: React.FC = () => {
       </div>
       
       <div className="w-full h-full relative overflow-hidden rounded-xl lg:rounded-2xl shadow-medium">
-        <img
-          src="https://api.builder.io/api/v1/image/assets/TEMP/f29fedf509458b35a43549f78a308870c4eb3fbb?width=2220"
-          alt="iPad Air M3"
-          className="w-full h-full object-cover"
-        />
+        {slides.map((slide, index) => (
+          <div
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-500 ${currentSlide === index ? 'opacity-100' : 'opacity-0'}`}
+          >
+            <img
+              src={slide.image}
+              alt={slide.alt}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ))}
       </div>
       
       <button

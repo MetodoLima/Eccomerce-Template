@@ -6,72 +6,13 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { products } from '@/data/products';
 
-// Mock product data - in a real app, this would come from an API
-const getProductById = (id: string) => {
-  const products = {
-    '1': {
-      id: '1',
-      title: 'AirTag : Pacote com 4 unidades',
-      images: [
-        'https://api.builder.io/api/v1/image/assets/TEMP/cf4bbbd0fe128753a13fe6d9116d7ea7c6509247?width=800',
-        'https://api.builder.io/api/v1/image/assets/TEMP/cf4bbbd0fe128753a13fe6d9116d7ea7c6509247?width=800',
-        'https://api.builder.io/api/v1/image/assets/TEMP/cf4bbbd0fe128753a13fe6d9116d7ea7c6509247?width=800'
-      ],
-      rating: { stars: 5, count: 28 },
-      originalPrice: 'R$ 649,00',
-      currentPrice: 'R$ 609,00',
-      discount: '6%',
-      description: 'O AirTag é uma forma fácil de rastrear seus objetos. Prenda um no suas chaves, enfie outro na mochila. E eles vão aparecer no app Buscar, que você já usa para localizar seus amigos e dispositivos.',
-      features: [
-        'Rastreamento preciso com tecnologia Ultra Wideband',
-        'Som alto para encontrar objetos próximos',
-        'Bateria que dura mais de um ano',
-        'Resistente à água (IP67)',
-        'Privacidade integrada'
-      ],
-      specifications: {
-        'Dimensões': '31,9 × 31,9 × 8,0 mm',
-        'Peso': '11 g',
-        'Conectividade': 'Bluetooth, Ultra Wideband',
-        'Bateria': 'CR2032 substituível',
-        'Resistência': 'IP67'
-      },
-      inStock: true,
-      category: 'Acessórios'
-    },
-    '2': {
-      id: '2',
-      title: 'Apple AirPods Pro 2° Geração - USB-C',
-      images: [
-        'https://api.builder.io/api/v1/image/assets/TEMP/0357f22904a329ce22a933a0742af8a8455dbc75?width=800',
-        'https://api.builder.io/api/v1/image/assets/TEMP/0357f22904a329ce22a933a0742af8a8455dbc75?width=800'
-      ],
-      rating: { stars: 5, count: 110 },
-      originalPrice: 'R$ 1.599,00',
-      currentPrice: 'R$ 1.499,00',
-      discount: '6%',
-      description: 'Os AirPods Pro (2ª geração) foram repensados para oferecer uma experiência de áudio ainda mais rica. O chip H2 desenvolvido pela Apple promove áudio mais inteligente.',
-      features: [
-        'Cancelamento ativo de ruído até 2x melhor',
-        'Áudio espacial personalizado',
-        'Modo ambiente adaptável',
-        'Até 6 horas de reprodução',
-        'Case com USB-C e MagSafe'
-      ],
-      specifications: {
-        'Chip': 'H2 da Apple',
-        'Bateria': 'Até 6h (AirPods) + 30h (case)',
-        'Conectividade': 'Bluetooth 5.3',
-        'Carregamento': 'USB-C, MagSafe, Qi',
-        'Resistência': 'IPX4'
-      },
-      inStock: true,
-      category: 'AirPods'
-    }
-  };
-
-  return products[id as keyof typeof products] || null;
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(price);
 };
 
 const ProductPage: React.FC = () => {
@@ -80,7 +21,22 @@ const ProductPage: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  const product = id ? getProductById(id) : null;
+  if (!id) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-4">Produto não encontrado</h1>
+          <Link to="/">
+            <Button>Voltar à loja</Button>
+          </Link>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const product = products.find(p => String(p.id) === id);
 
   if (!product) {
     return (
@@ -97,130 +53,103 @@ const ProductPage: React.FC = () => {
     );
   }
 
+  // Cria um array com todas as imagens disponíveis (principal + secundárias)
+  const productImages = [
+    product.image,
+    ...(product.secondaryImage1 ? [product.secondaryImage1] : []),
+    ...(product.secondaryImage2 ? [product.secondaryImage2] : [])
+  ].filter(Boolean); // Remove valores undefined
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
-          <span>/</span>
-          <Link to={`/categoria/${product.category.toLowerCase()}`} className="hover:text-foreground transition-colors">
-            {product.category}
-          </Link>
-          <span>/</span>
-          <span className="text-foreground">{product.title}</span>
-        </nav>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground mb-6">
+          <ArrowLeft className="w-4 h-4" />
+          Voltar à loja
+        </Link>
 
-        {/* Back button */}
-        <div className="mb-6">
-          <Link to="/">
-            <Button variant="ghost" className="gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Voltar
-            </Button>
-          </Link>
-        </div>
-
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+        <div className="grid md:grid-cols-2 gap-12">
           {/* Product Images */}
           <div>
-            <div className="aspect-square bg-surface-subtle rounded-2xl overflow-hidden mb-4">
-              <img
-                src={product.images[selectedImage]}
+            <div className="aspect-square bg-surface-subtle rounded-2xl flex items-center justify-center p-4 sm:p-8 mb-4 overflow-hidden">
+              <img 
+                src={productImages[selectedImage]}
                 alt={product.title}
-                className="w-full h-full object-contain p-8"
+                className="w-full h-full object-contain transition-opacity duration-300"
+                onError={(e) => {
+                  // Fallback para a imagem principal em caso de erro
+                  if (e.currentTarget.src !== product.image) {
+                    e.currentTarget.src = product.image;
+                  }
+                }}
               />
             </div>
-            
-            {product.images.length > 1 && (
-              <div className="flex gap-2">
-                {product.images.map((image, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImage(index)}
-                    className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
-                      selectedImage === index ? 'border-primary' : 'border-border'
-                    }`}
-                  >
-                    <img src={image} alt="" className="w-full h-full object-contain p-2" />
-                  </button>
-                ))}
-              </div>
-            )}
+            <div className="flex gap-2 sm:gap-3 overflow-x-auto py-2">
+              {productImages.map((img, index) => (
+                <button 
+                  key={index} 
+                  onClick={() => setSelectedImage(index)}
+                  className={`flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                    selectedImage === index 
+                      ? 'border-primary scale-105' 
+                      : 'border-transparent hover:border-muted-foreground/30'
+                  }`}
+                >
+                  <img 
+                    src={img} 
+                    alt={`${product.title} thumbnail ${index + 1}`} 
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback para a imagem principal em caso de erro
+                      if (e.currentTarget.src !== product.image) {
+                        e.currentTarget.src = product.image;
+                      }
+                    }}
+                  />
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Product Info */}
           <div>
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
-                  {product.title}
-                </h1>
-                
-                {product.rating && (
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="flex">
-                      {Array.from({ length: 5 }).map((_, index) => (
-                        <Star
-                          key={index}
-                          className={`w-4 h-4 ${
-                            index < product.rating!.stars 
-                              ? 'text-accent fill-accent' 
-                              : 'text-muted-foreground'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      ({product.rating.count} avaliações)
-                    </span>
-                  </div>
-                )}
+            <Badge variant="secondary" className="mb-2">{product.category}</Badge>
+            <h1 className="text-3xl font-bold text-foreground mb-3">
+              {product.title}
+            </h1>
+
+            {/* Rating */}
+            <div className="flex items-center gap-2 mb-4">
+              <div className="flex text-amber-400">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className={`w-5 h-5 ${i < Math.round(product.rating.rate) ? 'fill-current' : 'text-gray-300'}`} />
+                ))}
               </div>
-              
-              <div className="flex gap-2">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => setIsFavorite(!isFavorite)}
-                  className={isFavorite ? 'text-red-500' : ''}
-                >
-                  <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
-                </Button>
-                <Button variant="ghost" size="sm">
-                  <Share2 className="w-5 h-5" />
-                </Button>
-              </div>
+              <span className="text-muted-foreground text-sm">({product.rating.count} avaliações)</span>
             </div>
 
             {/* Price */}
             <div className="mb-6">
-              {product.originalPrice && (
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-muted-foreground line-through text-lg">
-                    {product.originalPrice}
-                  </span>
-                  <Badge variant="destructive">{product.discount} OFF</Badge>
-                </div>
-              )}
-              <div className="flex items-center gap-2">
-                <span className="text-3xl font-bold text-foreground">
-                  {product.currentPrice}
-                </span>
-                <span className="text-sm text-muted-foreground">no PIX</span>
-              </div>
-              <p className="text-sm text-muted-foreground mt-1">
-                ou 12x de {(parseFloat(product.currentPrice.replace('R$ ', '').replace(',', '.')) / 12).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} sem juros
-              </p>
+              <span className="text-3xl font-bold text-primary mr-3">
+                {formatPrice(product.price)}
+              </span>
             </div>
 
-            {/* Stock status */}
-            <div className="mb-6">
-              <Badge variant={product.inStock ? "default" : "destructive"}>
-                {product.inStock ? '✓ Em estoque' : 'Fora de estoque'}
-              </Badge>
+            {/* Stock & Actions */}
+            <div className="flex items-center gap-4 mb-6">
+              <span className='text-sm font-semibold text-green-600'>
+                Em estoque
+              </span>
+              <div className="flex items-center gap-2 ml-auto">
+                <Button variant="ghost" size="icon" onClick={() => setIsFavorite(!isFavorite)}>
+                  <Heart className={`w-5 h-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-muted-foreground'}`} />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <Share2 className="w-5 h-5 text-muted-foreground" />
+                </Button>
+              </div>
             </div>
 
             {/* Quantity */}
@@ -252,13 +181,24 @@ const ProductPage: React.FC = () => {
 
             {/* Action buttons */}
             <div className="space-y-3 mb-8">
-              <Button 
-                className="w-full h-12 text-lg font-semibold"
-                disabled={!product.inStock}
-              >
-                <ShoppingCart className="w-5 h-5 mr-2" />
-                Comprar Agora
-              </Button>
+              {product.link ? (
+                <a 
+                  href={product.link} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="inline-block w-full"
+                >
+                  <Button className="w-full h-12 text-lg font-semibold">
+                    <ShoppingCart className="w-5 h-5 mr-2" />
+                    Comprar Agora
+                  </Button>
+                </a>
+              ) : (
+                <Button className="w-full h-12 text-lg font-semibold" disabled>
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  Indisponível
+                </Button>
+              )}
               <Button variant="outline" className="w-full h-12">
                 Adicionar ao Carrinho
               </Button>
@@ -272,7 +212,7 @@ const ProductPage: React.FC = () => {
               </div>
               <div className="flex items-center gap-3">
                 <Shield className="w-5 h-5 text-primary" />
-                <span>Garantia oficial Apple</span>
+                <span>Garantia oficial</span>
               </div>
               <div className="flex items-center gap-3">
                 <RotateCcw className="w-5 h-5 text-primary" />
@@ -285,9 +225,8 @@ const ProductPage: React.FC = () => {
         {/* Product Details */}
         <div className="mt-12">
           <Tabs defaultValue="description" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="description">Descrição</TabsTrigger>
-              <TabsTrigger value="features">Características</TabsTrigger>
               <TabsTrigger value="specifications">Especificações</TabsTrigger>
             </TabsList>
             
@@ -299,26 +238,10 @@ const ProductPage: React.FC = () => {
               </div>
             </TabsContent>
             
-            <TabsContent value="features" className="mt-6">
-              <ul className="space-y-2">
-                {product.features.map((feature, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <span className="text-primary mt-1.5">•</span>
-                    <span className="text-foreground">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </TabsContent>
-            
             <TabsContent value="specifications" className="mt-6">
-              <div className="grid gap-4">
-                {Object.entries(product.specifications).map(([key, value]) => (
-                  <div key={key} className="flex justify-between py-2 border-b border-border">
-                    <span className="font-medium text-foreground">{key}</span>
-                    <span className="text-muted-foreground">{value}</span>
-                  </div>
-                ))}
-              </div>
+               <p className="text-foreground leading-relaxed">
+                  Não há especificações detalhadas para este produto.
+                </p>
             </TabsContent>
           </Tabs>
         </div>

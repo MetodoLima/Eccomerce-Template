@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 interface Category {
   name: string;
@@ -67,8 +68,8 @@ const CategorySection: React.FC = () => {
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {categories.map((category, index) => (
-          <article key={index} className="flex flex-col items-center shrink-0">
-            <a href="#" className="group">
+          <Link key={index} to={`/categoria/${category.name.toLowerCase()}`} className="flex flex-col items-center shrink-0 group">
+            <article>
               <div className="relative w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 xl:w-48 xl:h-48 overflow-hidden rounded-full shadow-soft hover:shadow-medium transition-all duration-300 group-hover:scale-105">
                 <img
                   src={category.image}
@@ -79,8 +80,8 @@ const CategorySection: React.FC = () => {
               <p className="mt-2 sm:mt-3 text-xs sm:text-sm lg:text-base font-medium text-foreground text-center">
                 {category.name}
               </p>
-            </a>
-          </article>
+            </article>
+          </Link>
         ))}
       </div>
       

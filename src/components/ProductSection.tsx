@@ -1,18 +1,8 @@
 import React, { useRef } from 'react';
-import { Link } from 'react-router-dom';
 import ProductCard from './ProductCard';
+import { Product } from '@/types';
 
-interface Product {
-  id: string;
-  image: string;
-  title: string;
-  rating?: {
-    stars: number;
-    count: number;
-  };
-  originalPrice?: string;
-  currentPrice: string;
-}
+
 
 interface ProductSectionProps {
   title: string;
@@ -60,21 +50,22 @@ const ProductSection: React.FC<ProductSectionProps> = ({
       <div className="w-full relative">
         <div 
           ref={scrollRef}
-          className={`flex gap-5 overflow-x-auto pb-5 max-md:gap-[15px] max-sm:gap-2.5 max-sm:px-5 max-sm:py-0 ${
+          className={`flex gap-5 overflow-x-auto pb-5 hide-scrollbar max-md:gap-[15px] max-sm:gap-2.5 max-sm:px-5 max-sm:py-0 ${
             hasVerticalBanner ? 'ml-[200px] max-md:ml-0' : 'px-10 max-sm:px-5'
           }`}
         >
           {products.map((product) => (
-            <Link key={product.id} to={`/produto/${product.id}`}>
-              <ProductCard
-                image={product.image}
-                title={product.title}
-                rating={product.rating}
-                originalPrice={product.originalPrice}
-                currentPrice={product.currentPrice}
-                onBuy={() => console.log(`Buying ${product.title}`)}
-              />
-            </Link>
+            <ProductCard
+              key={product.id}
+              image={product.image}
+              title={product.title}
+              rating={product.rating}
+              originalPrice={product.originalPrice}
+              price={product.price}
+              id={product.id}
+              link={product.link}
+              onBuy={() => console.log(`Buying ${product.title}`)}
+            />
           ))}
         </div>
         
