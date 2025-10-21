@@ -1,19 +1,12 @@
 export interface Product {
-  id: number;
+  id: string;
   title: string;
   price: number;
-  originalPrice?: number;
   description: string;
+  image_url: string;
+  sku: string;
   category: string;
-  image: string;
-  secondaryImage1?: string;
-  secondaryImage2?: string;
-  rating: {
-    rate: number;
-    count: number;
-  };
   isNew?: boolean;
   isFeatured?: boolean;
   isTopRated?: boolean;
-  link?: string;
 }

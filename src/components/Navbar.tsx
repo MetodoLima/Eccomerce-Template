@@ -1,138 +1,162 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, MessageCircle, Menu, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, Menu, X, ShoppingCart } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
 const Navbar: React.FC = () => {
+  const { items } = useCart();
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showNav, setShowNav] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+
+  const controlNavbar = () => {
+    if (typeof window !== 'undefined') {
+      if (window.scrollY > lastScrollY && window.scrollY > 80) { 
+        setShowNav(false);
+      } else {
+        setShowNav(true);
+      }
+      setLastScrollY(window.scrollY);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', controlNavbar);
+      return () => {
+        window.removeEventListener('scroll', controlNavbar);
+      };
+    }
+  }, [lastScrollY]);
 
   const navItems = [
     { name: 'Starlink', href: '/categoria/starlink' },
-    { name: 'Macs', href: '/categoria/macs' }, 
+    { name: 'Macs', href: '/categoria/macs' },
     { name: 'iPhones', href: '/categoria/iphones' },
     { name: 'iPads', href: '/categoria/ipads' },
-    { name: 'Watchs', href: '/categoria/watchs' },
-    { name: 'Câmeras', href: '/categoria/cameras' },
-    { name: 'AirPods', href: '/categoria/airpods' },
     { name: 'Acessórios', href: '/categoria/acessorios' },
-    { name: 'Seminovos', href: '/categoria/seminovos' }
   ];
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/busca?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+      setIsMenuOpen(false); // Fecha o menu mobile após a busca
+    }
+  };
+
   return (
-    <header className="w-full bg-surface-elevated border-b border-border shadow-soft sticky top-0 z-50">
-      {/* Top bar */}
-      <div className="bg-black">
-        <nav className="flex w-full h-12 md:h-[50px] justify-center items-center px-4 sm:px-6">
-          <ul className="flex h-full justify-center items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 max-w-7xl w-full max-lg:hidden">
-            {navItems.map((item, index) => (
-              <li key={index} className="flex h-full justify-center items-center">
-                <Link 
-                  to={item.href}
-                  className="flex h-full justify-center items-center px-2 sm:px-3 text-white text-xs sm:text-sm font-medium text-center hover:text-accent transition-colors duration-300"
-                >
+    <header className={`sticky top-0 z-50 transition-transform duration-300 ${showNav ? 'translate-y-0' : '-translate-y-full'}`}>
+      {/* Alterado para fundo branco sólido */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 sm:h-20">
+            {/* Logo */}
+            <div className="flex-shrink-0">
+              <Link to="/" className="text-2xl font-bold text-gray-900">
+                Logo
+              </Link>
+            </div>
+
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex items-center space-x-8">
+              {navItems.map((item) => (
+                <Link key={item.name} to={item.href} className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
                   {item.name}
                 </Link>
-              </li>
-            ))}
-          </ul>
-          
-          {/* Mobile menu button */}
-          <button 
-            className="lg:hidden text-white p-2"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </nav>
-      </div>
+              ))}
+            </nav>
 
-      {/* Main navbar */}
-      <div className="w-full px-4 sm:px-6 py-3 sm:py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          {/* Logo */}
-          <Link to="/" className="flex items-center">
-            <div className="text-2xl sm:text-3xl font-bold text-primary">
-              TechStore
+            {/* Search and Cart */}
+            <div className="flex items-center justify-end space-x-2 sm:space-x-4">
+              <form onSubmit={handleSearch} className="hidden sm:block relative">
+                <Input
+                  type="search"
+                  placeholder="Buscar..."
+                  className="pl-9 pr-4 h-10 w-32 sm:w-40 lg:w-56 bg-gray-100 rounded-full border-transparent focus:bg-white focus:border-gray-300"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              </form>
+
+              <Link to="/carrinho">
+                <Button variant="ghost" size="icon" className="relative">
+                  <ShoppingCart className="w-6 h-6 text-gray-600" />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
+                      {totalItems}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+
+              {/* Mobile Menu Button */}
+              <div className="lg:hidden">
+                <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(true)}>
+                  <Menu className="w-6 h-6 text-gray-600" />
+                </Button>
+              </div>
             </div>
-          </Link>
+          </div>
+        </div>
 
-          {/* Search bar */}
-          <div className="flex-1 max-w-xl mx-4 hidden sm:block">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+        {/* Mobile Menu */}
+        <div
+          className={`fixed inset-0 z-40 bg-black bg-opacity-25 transition-opacity lg:hidden ${isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+          onClick={() => setIsMenuOpen(false)}
+        />
+        <div
+          className={`fixed top-0 right-0 z-50 h-full w-full max-w-xs bg-white shadow-xl transition-transform duration-300 ease-in-out lg:hidden ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        >
+          <div className="flex items-center justify-between p-4 border-b">
+            <h2 className="text-lg font-semibold">Menu</h2>
+            <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
+              <X className="w-6 h-6 text-gray-600" />
+            </Button>
+          </div>
+          <div className="flex flex-col p-4 space-y-4">
+            <form onSubmit={handleSearch} className="relative">
               <Input
-                type="text"
+                type="search"
                 placeholder="Buscar produtos..."
+                className="pl-10 pr-4 h-11 w-full bg-gray-100 rounded-md border-transparent focus:bg-white focus:border-gray-300"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 w-full"
               />
-            </div>
-          </div>
-
-          {/* WhatsApp Button */}
-          <div className="flex items-center">
-            <a 
-              href="https://wa.me/SEUNUMERO" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 bg-[#25D366] text-white hover:bg-[#128C7E]"
-            >
-              <MessageCircle className="w-5 h-5" />
-              <span className="hidden sm:inline">Converse no WhatsApp</span>
-            </a>
-          </div>
-        </div>
-
-        {/* Mobile search */}
-        <div className="mt-3 sm:hidden">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input
-              type="text"
-              placeholder="Buscar produtos..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 w-full"
-            />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            </form>
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className="text-base font-medium text-gray-600 hover:text-gray-900 transition-colors p-2 rounded-md hover:bg-gray-100"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {item.name}
+              </Link>
+            ))}
           </div>
         </div>
       </div>
-
-      {/* Mobile menu */}
-      {isMenuOpen && (
-        <div className="lg:hidden bg-surface-elevated border-t border-border">
-          <nav className="px-4 py-3">
-            <ul className="space-y-2">
-              {navItems.map((item, index) => (
-                <li key={index}>
-                  <Link 
-                    to={item.href}
-                    className="block py-2 px-3 text-foreground hover:bg-surface-subtle rounded-md transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-              <li className="pt-2 border-t border-border">
-                <a 
-                  href="https://wa.me/SEUNUMERO"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 py-2 px-3 text-foreground hover:bg-surface-subtle rounded-md transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <MessageCircle className="w-5 h-5" />
-                  Converse no WhatsApp
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      )}
     </header>
   );
 };

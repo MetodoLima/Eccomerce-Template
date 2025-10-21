@@ -4,8 +4,6 @@ import { ArrowLeft, Filter, Grid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ProductCard from '@/components/ProductCard';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { products as allProducts } from '@/data/products';
 
 const getCategoryName = (category: string) => {
@@ -32,14 +30,12 @@ const CategoryPage: React.FC = () => {
   if (!category) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">Categoria não encontrada</h1>
           <Link to="/">
             <Button>Voltar à loja</Button>
           </Link>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -49,8 +45,6 @@ const CategoryPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
-      
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
@@ -125,16 +119,7 @@ const CategoryPage: React.FC = () => {
               : 'grid-cols-1'
           }`}>
             {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                image={product.image}
-                title={product.title}
-                rating={product.rating}
-                originalPrice={product.originalPrice}
-                price={product.price}
-                id={product.id}
-                link={product.link}
-              />
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
@@ -151,8 +136,6 @@ const CategoryPage: React.FC = () => {
           </div>
         )}
       </main>
-
-      <Footer />
     </div>
   );
 };

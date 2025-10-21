@@ -55,17 +55,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
           }`}
         >
           {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              image={product.image}
-              title={product.title}
-              rating={product.rating}
-              originalPrice={product.originalPrice}
-              price={product.price}
-              id={product.id}
-              link={product.link}
-              onBuy={() => console.log(`Buying ${product.title}`)}
-            />
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
         

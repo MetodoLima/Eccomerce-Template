@@ -1,38 +1,28 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Star } from 'lucide-react'; // Importando o ícone de estrela
 import { Product } from '@/types';
+import { useCart } from '@/contexts/CartContext';
+import toast from 'react-hot-toast';
+import { Button } from './ui/button';
+import { ShoppingCart } from 'lucide-react';
 
-// Usa uma versão parcial do tipo Product para as props, tornando a maioria opcional
-interface ProductCardProps extends Partial<Product> {
-  image: string; // Garante que a imagem seja sempre fornecida
-  title: string; // Garante que o título seja sempre fornecido
-  onBuy?: () => void;
+interface ProductCardProps {
+  product: Product;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({
-  image,
-  title,
-  rating,
-  originalPrice,
-  price,
-  isNew,
-  onBuy,
-  id
-}) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const { id, title, price, image_url, sku } = product;
+  const { addToCart } = useCart();
 
-  const buttonStyles = "flex w-full h-12 sm:h-14 justify-center items-center bg-primary hover:bg-primary-hover text-primary-foreground font-semibold rounded-xl transition-all duration-300 hover:scale-105 focus:ring-2 focus:ring-primary/50 focus:outline-none";
+  const formattedPrice = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(price);
 
-    const renderBuyButton = () => {
-    // O botão "Comprar" no card sempre leva para a página de detalhes do produto.
-    if (id) {
-      return (
-        <Link to={`/produto/${id}`} className={buttonStyles}>
-          Comprar
-        </Link>
-      );
-    }
-    return null; // Não renderiza o botão se não houver ID
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault(); // Impede a navegação se o card estiver dentro de um Link
+    e.stopPropagation();
+    addToCart(product, 1);
   };
 
   return (
@@ -40,44 +30,39 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div className="w-full flex flex-col flex-grow">
         <div className="aspect-square flex justify-center items-center bg-surface-subtle mb-4 sm:mb-6 p-4 rounded-3xl overflow-hidden">
           <img
-            src={image}
+            src={image_url}
             alt={title}
             className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
           />
         </div>
         
-        <div className="flex w-full justify-center items-center min-h-12 mb-4 sm:mb-6">
+        <div className="flex w-full justify-center items-center min-h-12 mb-2">
           <h3 className="text-foreground text-center text-lg sm:text-xl font-bold leading-tight line-clamp-2">
             {title}
           </h3>
         </div>
+
+        <div className="text-center mb-4">
+          <span className="text-xs text-gray-500">SKU: {sku}</span>
+        </div>
         
-        {rating && rating.count > 0 && (
-          <div className="flex justify-center items-center gap-1 w-full mb-4">
-            {rating && rating.rate > 0 && (
-              <div className="flex items-center gap-1">
-                <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                <span className="text-sm font-semibold">{rating.rate}</span>
-                <span className="text-sm text-gray-500">({rating.count})</span>
-              </div>
-            )}
-          </div>
-        )}
-        
-        <div className="w-full relative mb-4 sm:mb-6 text-center mt-auto">
-          {originalPrice && (
-            <div className="text-text-subtle text-sm font-semibold line-through mb-1">
-              {originalPrice}
-            </div>
-          )}
-          <p className="text-xl font-bold text-gray-900">R$ {price}</p>
+        <div className="w-full text-center mt-auto mb-4">
+          <p className="text-xl font-bold text-gray-900">{formattedPrice}</p>
           <div className="text-text-subtle text-xs font-semibold mt-1">
             no pix
           </div>
         </div>
       </div>
       
-      {renderBuyButton()}
+      <div className="flex flex-col gap-2">
+        <Button onClick={handleAddToCart} className="w-full">
+          <ShoppingCart className="w-4 h-4 mr-2" />
+          Adicionar ao Carrinho
+        </Button>
+        <Link to={`/produto/${id}`} className="w-full">
+          <Button variant="outline" className="w-full">Ver Detalhes</Button>
+        </Link>
+      </div>
     </article>
   );
 };

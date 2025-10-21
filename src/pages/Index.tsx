@@ -1,5 +1,4 @@
 import React from 'react';
-import Navbar from '../components/Navbar';
 import HeroCarousel from '../components/HeroCarousel';
 import CategorySection from '../components/CategorySection';
 import ProductSection from '../components/ProductSection';
@@ -18,7 +17,6 @@ const Index: React.FC = () => {
 
   return (
     <div className="w-full min-h-screen bg-background">
-      <Navbar />
       <main className="w-full pt-8">
         <HeroCarousel />
         <CategorySection />
