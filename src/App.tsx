@@ -9,6 +9,9 @@ import NotFound from './pages/NotFound';
 import { CartProvider } from './contexts/CartContext';
 import { CartPage } from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage.tsx';
+import SearchPage from './pages/SearchPage.tsx';
+import FloatingWhatsapp from './components/FloatingWhatsapp';
+import ScrollTopButton from './components/ScrollTopButton';
 
 const App = () => (
   <TooltipProvider>
@@ -23,10 +26,13 @@ const App = () => (
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/produto/:id" element={<ProductPage />} />
             <Route path="/categoria/:category" element={<CategoryPage />} />
+            <Route path="/busca" element={<SearchPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
+        <FloatingWhatsapp />
+        <ScrollTopButton />
       </BrowserRouter>
     </CartProvider>
   </TooltipProvider>

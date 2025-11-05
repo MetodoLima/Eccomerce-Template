@@ -4,6 +4,7 @@ export interface Product {
   price: number;
   description: string;
   image_url: string;
+  hover_image_url?: string;
   sku: string;
   category: string;
   isNew?: boolean;

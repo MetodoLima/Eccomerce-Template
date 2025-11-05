@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Search, Menu, X, ShoppingCart } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Menu, X, ShoppingCart } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
 import AnnouncementBar from './AnnouncementBar.tsx';
+import SearchModal from './SearchModal';
 
 const Navbar: React.FC = () => {
   const { items } = useCart();
-  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showNav, setShowNav] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -21,12 +22,6 @@ const Navbar: React.FC = () => {
       document.body.style.overflow = 'unset';
     };
   }, [isMenuOpen]);
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showNav, setShowNav] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
-  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const controlNavbar = () => {
     if (typeof window !== 'undefined') {
@@ -48,6 +43,8 @@ const Navbar: React.FC = () => {
     }
   }, [lastScrollY]);
 
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+
   const navItems = [
     { name: 'Starlink', href: '/categoria/starlink' },
     { name: 'Macs', href: '/categoria/macs' },
@@ -56,40 +53,22 @@ const Navbar: React.FC = () => {
     { name: 'Acessórios', href: '/categoria/acessorios' },
   ];
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/busca?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery('');
-      setIsMenuOpen(false); // Fecha o menu mobile após a busca
-    }
-  };
-
   return (
     <header className={`sticky top-0 z-50 transition-transform duration-300 ${showNav ? 'translate-y-0' : '-translate-y-full'}`}>
       <AnnouncementBar />
       <div className="bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Linha superior: busca | logo | ícones */}
+          {/* Linha superior: lupa | logo | ícones */}
           <div className="grid grid-cols-2 lg:grid-cols-3 items-center h-16 sm:h-20 border-b border-gray-200">
-            {/* Busca (esquerda) */}
-            <div className="hidden sm:block">
-              <form onSubmit={handleSearch} className="relative max-w-xs">
-                <Input
-                  type="search"
-                  placeholder="Buscar..."
-                  className="pl-9 pr-4 h-10 w-40 lg:w-56 bg-gray-100 rounded-full border-transparent focus:bg-white focus:border-gray-300"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              </form>
+            {/* Lupa (esquerda) */}
+            <div className="flex items-center">
+              <SearchModal />
             </div>
 
             {/* Logo (centralizada no desktop) */}
             <div className="flex col-start-1 col-end-2 lg:col-start-auto lg:col-end-auto justify-start lg:justify-center">
-              <Link to="/" className="text-2xl font-bold text-gray-900">
-                Logo
+              <Link to="/" className="inline-flex items-center" aria-label="Home">
+                <img src="/logo.svg" alt="Logo" className="h-8 sm:h-9 w-auto" />
               </Link>
             </div>
 
@@ -140,16 +119,7 @@ const Navbar: React.FC = () => {
             </Button>
           </div>
           <div className="flex flex-col p-4 space-y-4">
-            <form onSubmit={handleSearch} className="relative">
-              <Input
-                type="search"
-                placeholder="Buscar produtos..."
-                className="pl-10 pr-4 h-11 w-full bg-gray-100 rounded-md border-transparent focus:bg-white focus:border-gray-300"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            </form>
+            <SearchModal />
             {navItems.map((item) => (
               <Link
                 key={item.name}

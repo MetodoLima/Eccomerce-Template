@@ -1,38 +1,40 @@
 import React from 'react';
 import HeroCarousel from '../components/HeroCarousel';
-import CategorySection from '../components/CategorySection';
-import ProductSection from '../components/ProductSection';
-import BannerSection from '../components/BannerSection';
-import TopSellingSection from '../components/TopSellingSection';
+import CollectionsSection from '@/components/CollectionsSection';
+import ProductSection from '@/components/ProductSection';
+import CategoryTabs from '@/components/CategoryTabs';
+import SecondaryCarousel from '@/components/SecondaryCarousel';
+import InfoFeatures from '@/components/InfoFeatures';
 import Footer from '../components/Footer';
 import { products as allProducts } from '@/data/products';
-import { Product } from '@/types';
 
 
 
 const Index: React.FC = () => {
-  const novidades = allProducts.filter(p => p.isNew);
-  const destaques = allProducts.filter(p => p.isFeatured);
-  const maisAvaliados = allProducts.filter(p => p.isTopRated);
+  const iphones = allProducts.filter(p => p.category === 'iphones');
+  const macs = allProducts.filter(p => p.category === 'macs');
+  const watchs = allProducts.filter(p => p.category === 'watchs');
 
   return (
     <div className="w-full min-h-screen bg-background">
       <main className="w-full pt-8">
         <HeroCarousel />
-        <CategorySection />
-        <BannerSection
-          images={[
-            "/Figures/ImagemAux1-Eccomerce.svg",
-            "/Figures/ImagemAux2-Eccomerce.svg",
-          ]}
-          className="px-4 sm:px-6 py-6 sm:py-8"
-        />
+        {/* Nossos produtos */}
+        <CollectionsSection />
 
-        <ProductSection title="Novidades" products={novidades} />
-        <ProductSection title="Destaques" products={destaques} />
-        <ProductSection title="Mais Avaliados" products={maisAvaliados} />
+        {/* Três categorias, uma abaixo da outra */}
+        <ProductSection title="iPhones" products={iphones} centerTitle />
+        <ProductSection title="Macs" products={macs} centerTitle />
+        <ProductSection title="Watchs" products={watchs} centerTitle />
 
-        <TopSellingSection />
+        {/* Segundo carrossel */}
+        <SecondaryCarousel />
+
+        {/* Nossas Coleções (abas) após o segundo carrossel */}
+        <CategoryTabs />
+
+        {/* Benefícios */}
+        <InfoFeatures />
       </main>
       <Footer />
     </div>

@@ -1,31 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 const slides = [
-  {
-    image: "/Figures/Capa 1-EccomerceIphone.svg",
-    alt: "iPad Air M3"
-  },
-  {
-    image: "/Figures/Capa2-EccomerceIphone.svg",
-    alt: "iPhone 16 Pro Max"
-  }
+  { image: '/Figures/CapaMobile-EccomerceIphone.svg', alt: 'Ofertas Apple' },
+  { image: '/Figures/Capa2-EccomerceIphone.svg', alt: 'Lançamentos' },
 ];
 
-const HeroCarousel: React.FC = () => {
+const SecondaryCarousel: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const totalSlides = slides.length;
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % totalSlides);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-  };
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % totalSlides);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+  const goToSlide = (index: number) => setCurrentSlide(index);
 
   return (
     <section className="w-full h-64 sm:h-80 lg:h-[427px] relative mt-6 sm:mt-8 lg:mt-12">
@@ -41,22 +27,18 @@ const HeroCarousel: React.FC = () => {
           />
         ))}
       </div>
-      
+
       <div className="w-full h-full relative overflow-hidden">
         {slides.map((slide, index) => (
           <div
             key={index}
             className={`absolute inset-0 transition-opacity duration-500 ${currentSlide === index ? 'opacity-100' : 'opacity-0'}`}
           >
-            <img
-              src={slide.image}
-              alt={slide.alt}
-              className="w-full h-full object-cover"
-            />
+            <img src={slide.image} alt={slide.alt} className="w-full h-full object-cover" />
           </div>
         ))}
       </div>
-      
+
       <button
         onClick={prevSlide}
         className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-black/20 hover:bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white opacity-60 hover:opacity-100 transition-all duration-300 md:opacity-0 md:group-hover:opacity-100"
@@ -66,7 +48,7 @@ const HeroCarousel: React.FC = () => {
           <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
         </svg>
       </button>
-      
+
       <button
         onClick={nextSlide}
         className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-black/20 hover:bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white opacity-60 hover:opacity-100 transition-all duration-300 md:opacity-0 md:group-hover:opacity-100"
@@ -80,4 +62,4 @@ const HeroCarousel: React.FC = () => {
   );
 };
 
-export default HeroCarousel;
+export default SecondaryCarousel;

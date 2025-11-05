@@ -11,7 +11,7 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const { id, title, price, image_url, sku } = product;
+  const { id, title, price, image_url, hover_image_url, sku } = product;
   const { addToCart } = useCart();
 
   const formattedPrice = new Intl.NumberFormat('pt-BR', {
@@ -28,11 +28,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
     <article className="flex w-60 sm:w-64 lg:w-72 h-full flex-col gap-4 sm:gap-5 shrink-0 shadow-soft hover:shadow-medium bg-surface-elevated p-4 sm:p-5 rounded-2xl transition-all duration-300 hover:scale-105 group">
       <div className="w-full flex flex-col flex-grow">
-        <div className="aspect-square flex justify-center items-center bg-surface-subtle mb-4 sm:mb-6 p-4 rounded-3xl overflow-hidden">
+        <div className="aspect-square bg-surface-subtle mb-4 sm:mb-6 p-4 rounded-3xl overflow-hidden relative">
+          {/* imagem padrão */}
           <img
             src={image_url}
             alt={title}
-            className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
+            className="absolute inset-0 w-full h-full object-contain transition-opacity duration-300 group-hover:opacity-0"
+          />
+          {/* imagem hover (fallback para a mesma se não houver) */}
+          <img
+            src={hover_image_url || image_url}
+            alt={title}
+            className="absolute inset-0 w-full h-full object-contain transition-transform duration-300 transition-opacity group-hover:opacity-100 opacity-0 group-hover:scale-110"
           />
         </div>
         
