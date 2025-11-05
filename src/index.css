@@ -125,3 +125,46 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .marquee {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    gap: 0; /* sem espaço entre grupos: o separador • define o espaçamento uniforme */
+    transform: translateX(-50%); /* começa já costurado no meio */
+    animation: marquee-scroll 40s linear infinite; /* sem reverse, keyframes cobrem -50% -> 0 */
+    animation-play-state: paused; /* pausado até o componente montar */
+    will-change: transform;
+  }
+
+  /* Libera a animação somente após montagem para evitar flash/reset */
+  .marquee[data-ready='true'] .marquee-track {
+    animation-play-state: running;
+  }
+
+  .marquee-seq {
+    display: flex;
+    align-items: center;
+    padding: 11px 0; /* altura da faixa (mais grossa) */
+  }
+
+  /* Pausar ao passar o mouse */
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}
+
+@keyframes marquee-scroll {
+  /* mover da esquerda para a direita: começamos em -50% e vamos até 0 */
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}

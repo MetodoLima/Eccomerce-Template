@@ -8,6 +8,7 @@ import CategoryPage from './pages/CategoryPage';
 import NotFound from './pages/NotFound';
 import { CartProvider } from './contexts/CartContext';
 import { CartPage } from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
 
 const App = () => (
   <TooltipProvider>
@@ -19,6 +20,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/carrinho" element={<CartPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/produto/:id" element={<ProductPage />} />
             <Route path="/categoria/:category" element={<CategoryPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

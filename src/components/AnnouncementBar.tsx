@@ -1,0 +1,48 @@
+import React, { useEffect, useState } from 'react';
+
+const messages = [
+  'PARCELE SUAS COMPRAS EM ATÉ 12X',
+  'BEM VINDO A NOSSA LOJA!',
+  'FRETE GRÁTIS PARA TODO O BRASIL',
+];
+
+const AnnouncementBar: React.FC = () => {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setReady(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+  // Garante conteúdo suficiente para preencher telas largas e evitar vazio inicial
+  const repeatCount = 2; // aumente/diminua conforme necessário
+  const sequence = Array(repeatCount).fill(messages).flat();
+  return (
+    <div className="w-full bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] overflow-hidden">
+      <div className="marquee" data-ready={ready ? 'true' : undefined}>
+        <div className="marquee-track">
+          <div className="marquee-seq">
+            {sequence.map((msg, i) => (
+              <React.Fragment key={`m1-${i}`}>
+                <span className="whitespace-nowrap text-xs sm:text-sm font-montserrat font-semibold tracking-wide uppercase">
+                  {msg}
+                </span>
+                <span aria-hidden className="px-8 text-[hsl(var(--primary-foreground))]/70">•</span>
+              </React.Fragment>
+            ))}
+          </div>
+          <div className="marquee-seq" aria-hidden="true">
+            {sequence.map((msg, i) => (
+              <React.Fragment key={`m2-${i}`}>
+                <span className="whitespace-nowrap text-xs sm:text-sm font-montserrat font-semibold tracking-wide uppercase">
+                  {msg}
+                </span>
+                <span aria-hidden className="px-8 text-[hsl(var(--primary-foreground))]/70">•</span>
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AnnouncementBar;

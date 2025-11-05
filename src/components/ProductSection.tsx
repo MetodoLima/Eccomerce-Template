@@ -9,13 +9,15 @@ interface ProductSectionProps {
   products: Product[];
   hasVerticalBanner?: boolean;
   bannerImage?: string;
+  centerTitle?: boolean;
 }
 
 const ProductSection: React.FC<ProductSectionProps> = ({
   title,
   products,
   hasVerticalBanner = false,
-  bannerImage
+  bannerImage,
+  centerTitle = false
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -33,7 +35,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
 
   return (
     <section className="w-full max-w-[1140px] relative mx-auto my-[60px] px-5 py-0 max-sm:px-2.5 max-sm:py-0">
-      <h2 className="text-black text-xl font-bold leading-6 uppercase mb-6 max-sm:text-lg max-sm:mb-5">
+      <h2 className={`text-black text-xl font-bold leading-6 uppercase mb-6 max-sm:text-lg max-sm:mb-5 ${centerTitle ? 'text-center' : ''}`}>
         {title}
       </h2>
       

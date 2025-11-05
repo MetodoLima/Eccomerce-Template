@@ -4,6 +4,7 @@ import { Search, Menu, X, ShoppingCart } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import AnnouncementBar from './AnnouncementBar';
 
 const Navbar: React.FC = () => {
   const { items } = useCart();
@@ -65,39 +66,34 @@ const Navbar: React.FC = () => {
 
   return (
     <header className={`sticky top-0 z-50 transition-transform duration-300 ${showNav ? 'translate-y-0' : '-translate-y-full'}`}>
-      {/* Alterado para fundo branco sólido */}
-      <div className="bg-white border-b border-gray-200">
+      <AnnouncementBar />
+      <div className="bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20">
-            {/* Logo */}
-            <div className="flex-shrink-0">
-              <Link to="/" className="text-2xl font-bold text-gray-900">
-                Logo
-              </Link>
-            </div>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-8">
-              {navItems.map((item) => (
-                <Link key={item.name} to={item.href} className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
-                  {item.name}
-                </Link>
-              ))}
-            </nav>
-
-            {/* Search and Cart */}
-            <div className="flex items-center justify-end space-x-2 sm:space-x-4">
-              <form onSubmit={handleSearch} className="hidden sm:block relative">
+          {/* Top row: search | logo | icons */}
+          <div className="grid grid-cols-2 lg:grid-cols-3 items-center h-16 sm:h-20 border-b border-gray-200">
+            {/* Search (left) */}
+            <div className="hidden sm:block">
+              <form onSubmit={handleSearch} className="relative max-w-xs">
                 <Input
                   type="search"
                   placeholder="Buscar..."
-                  className="pl-9 pr-4 h-10 w-32 sm:w-40 lg:w-56 bg-gray-100 rounded-full border-transparent focus:bg-white focus:border-gray-300"
+                  className="pl-9 pr-4 h-10 w-40 lg:w-56 bg-gray-100 rounded-full border-transparent focus:bg-white focus:border-gray-300"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               </form>
+            </div>
 
+            {/* Logo (center on lg) */}
+            <div className="flex col-start-1 col-end-2 lg:col-start-auto lg:col-end-auto justify-start lg:justify-center">
+              <Link to="/" className="text-2xl font-bold text-gray-900">
+                Logo
+              </Link>
+            </div>
+
+            {/* Icons (right) */}
+            <div className="flex items-center justify-end space-x-2 sm:space-x-4">
               <Link to="/carrinho">
                 <Button variant="ghost" size="icon" className="relative">
                   <ShoppingCart className="w-6 h-6 text-gray-600" />
@@ -117,6 +113,15 @@ const Navbar: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Bottom row: centered nav */}
+          <nav className="hidden lg:flex items-center justify-center space-x-8 py-3">
+            {navItems.map((item) => (
+              <Link key={item.name} to={item.href} className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
+                {item.name}
+              </Link>
+            ))}
+          </nav>
         </div>
 
         {/* Mobile Menu */}
