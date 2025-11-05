@@ -125,3 +125,47 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .marquee {
+    position: relative;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    gap: 0; /* sem espaçamento entre as duas metades para costura perfeita */
+    animation: marquee-scroll 40s linear infinite reverse; /* esquerda -> direita */
+    animation-play-state: paused; /* inicia pausado até ficar pronto */
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: translate3d(0,0,0);
+  }
+
+  .marquee[data-ready='true'] .marquee-track {
+    animation-play-state: running;
+  }
+
+  .marquee-seq {
+    display: flex;
+    align-items: center;
+    padding: 12px 0; /* altura da faixa */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}
+
+/* Pausar ao passar o mouse */
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee-scroll {
+  0% { transform: translate3d(0,0,0); }
+  100% { transform: translate3d(-50%,0,0); }
+}
