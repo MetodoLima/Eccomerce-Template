@@ -33,7 +33,7 @@ const CategoryTabs: React.FC = () => {
       <div className="relative">
         <div className="flex gap-5 overflow-x-auto pb-4 hide-scrollbar">
           {filtered.map(prod => (
-            <ProductCard key={prod.id} product={prod} />
+            <ProductCard key={prod.id} product={prod} className="w-[calc(50%-10px)] sm:w-[calc(50%-10px)] lg:w-[calc(25%-15px)] flex-shrink-0" />
           ))}
         </div>
       </div>

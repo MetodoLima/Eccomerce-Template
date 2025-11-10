@@ -59,21 +59,24 @@ const Navbar: React.FC = () => {
       <div className="bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Linha superior: lupa | logo | ícones */}
-          <div className="grid grid-cols-2 lg:grid-cols-3 items-center h-16 sm:h-20 border-b border-gray-200">
-            {/* Lupa (esquerda) */}
-            <div className="flex items-center">
-              <SearchModal />
+          <div className="relative flex items-center justify-between h-16 sm:h-20 border-b border-gray-200">
+            {/* Esquerda: Botão do menu mobile */}
+            <div className="flex-1 lg:hidden">
+              <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(true)}>
+                <Menu className="w-6 h-6 text-gray-600" />
+              </Button>
             </div>
 
-            {/* Logo (centralizada no desktop) */}
-            <div className="flex col-start-1 col-end-2 lg:col-start-auto lg:col-end-auto justify-start lg:justify-center">
+            {/* Centro: Logo */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
               <Link to="/" className="inline-flex items-center" aria-label="Home">
                 <img src="/logo.svg" alt="Logo" className="h-8 sm:h-9 w-auto" />
               </Link>
             </div>
 
-            {/* Ícones (direita) */}
-            <div className="flex items-center justify-end space-x-2 sm:space-x-4">
+            {/* Direita: Ícones */}
+            <div className="flex-1 flex items-center justify-end space-x-2 sm:space-x-4">
+              <SearchModal />
               <Link to="/carrinho">
                 <Button variant="ghost" size="icon" className="relative">
                   <ShoppingCart className="w-6 h-6 text-gray-600" />
@@ -84,13 +87,6 @@ const Navbar: React.FC = () => {
                   )}
                 </Button>
               </Link>
-
-              {/* Botão do menu mobile */}
-              <div className="lg:hidden">
-                <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(true)}>
-                  <Menu className="w-6 h-6 text-gray-600" />
-                </Button>
-              </div>
             </div>
           </div>
 
@@ -110,7 +106,7 @@ const Navbar: React.FC = () => {
           onClick={() => setIsMenuOpen(false)}
         />
         <div
-          className={`fixed top-0 right-0 z-50 h-full w-full max-w-xs bg-white shadow-xl transition-transform duration-300 ease-in-out lg:hidden ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          className={`fixed top-0 left-0 z-50 h-screen w-full max-w-xs bg-white shadow-xl transition-transform duration-300 ease-in-out lg:hidden flex flex-col ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}
         >
           <div className="flex items-center justify-between p-4 border-b">
             <h2 className="text-lg font-semibold">Menu</h2>
@@ -118,8 +114,14 @@ const Navbar: React.FC = () => {
               <X className="w-6 h-6 text-gray-600" />
             </Button>
           </div>
-          <div className="flex flex-col p-4 space-y-4">
-            <SearchModal />
+          <div className="flex flex-1 flex-col p-4 space-y-4">
+            <Link
+              to="/"
+              className="text-base font-medium text-gray-600 hover:text-gray-900 transition-colors p-2 rounded-md hover:bg-gray-100"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Início
+            </Link>
             {navItems.map((item) => (
               <Link
                 key={item.name}

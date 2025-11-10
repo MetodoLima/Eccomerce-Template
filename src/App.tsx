@@ -12,12 +12,14 @@ import CheckoutPage from './pages/CheckoutPage.tsx';
 import SearchPage from './pages/SearchPage.tsx';
 import FloatingWhatsapp from './components/FloatingWhatsapp';
 import ScrollTopButton from './components/ScrollTopButton';
+import ScrollToTop from './components/ScrollToTop';
 
 const App = () => (
   <TooltipProvider>
     <Toaster position="top-right" />
     <CartProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <Navbar />
         <main>
           <Routes>

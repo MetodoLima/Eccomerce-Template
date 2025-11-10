@@ -3,10 +3,12 @@ import React, { useState, useEffect } from 'react';
 const slides = [
   {
     image: "/Figures/Capa 1-EccomerceIphone.svg",
+    mobileImage: "/Figures/BannerMobile.svg", // Assumindo que o nome do arquivo é BannerMobile.svg
     alt: "iPad Air M3"
   },
   {
     image: "/Figures/Capa2-EccomerceIphone.svg",
+    mobileImage: "/Figures/BannerMobile.svg", // Use a mesma ou outra imagem mobile
     alt: "iPhone 16 Pro Max"
   }
 ];
@@ -28,7 +30,7 @@ const HeroCarousel: React.FC = () => {
   };
 
   return (
-    <section className="w-full h-64 sm:h-80 lg:h-[427px] relative mt-6 sm:mt-8 lg:mt-12">
+    <section className="w-full relative">
       <div className="flex justify-center items-start gap-2 sm:gap-3 absolute left-1/2 transform -translate-x-1/2 bottom-4 z-10">
         {Array.from({ length: totalSlides }).map((_, index) => (
           <button
@@ -42,16 +44,21 @@ const HeroCarousel: React.FC = () => {
         ))}
       </div>
       
-      <div className="w-full h-full relative overflow-hidden">
+      <div className="w-full relative overflow-hidden max-h-[85vh] lg:max-h-full">
         {slides.map((slide, index) => (
           <div
             key={index}
-            className={`absolute inset-0 transition-opacity duration-500 ${currentSlide === index ? 'opacity-100' : 'opacity-0'}`}
+            className={`${currentSlide === index ? 'block' : 'hidden'}`}
           >
             <img
               src={slide.image}
               alt={slide.alt}
-              className="w-full h-full object-cover"
+              className="w-full h-auto object-contain hidden md:block"
+            />
+            <img
+              src={slide.mobileImage}
+              alt={slide.alt}
+              className="w-full h-auto object-contain block md:hidden"
             />
           </div>
         ))}
