@@ -113,13 +113,13 @@ const CategoryPage: React.FC = () => {
             </p>
           </div>
           <div className="rounded-2xl overflow-hidden bg-gradient-primary">
-            <div className="aspect-[16/6] sm:aspect-[16/5] w-full">
+            <div className="aspect-[16/6] sm:aspect-[16/5] w-full p-2 sm:p-4 bg-white/10">
               <img
                 src={categoryImages[category.toLowerCase()] || 'https://via.placeholder.com/1200x400'}
                 alt={`Banner da categoria ${categoryName}`}
                 loading="lazy"
                 decoding="async"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             </div>
           </div>
