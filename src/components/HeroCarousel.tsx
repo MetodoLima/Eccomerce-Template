@@ -14,19 +14,42 @@ const slides = [
 ];
 
 const HeroCarousel: React.FC = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(true);
   const totalSlides = slides.length;
 
+  const trackSlides = [...slides, slides[0]]; // clone do primeiro para loop suave
+
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % totalSlides);
+    setCurrentIndex((prev) => prev + 1);
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+    // Mantém funcionalidade de voltar manualmente
+    setCurrentIndex((prev) => (prev - 1 + totalSlides) % totalSlides);
   };
 
   const goToSlide = (index: number) => {
-    setCurrentSlide(index);
+    setCurrentIndex(index % totalSlides);
+  };
+
+  // Auto-play: avança sempre da direita para a esquerda (incrementando o índice)
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCurrentIndex((prev) => prev + 1);
+    }, 8000);
+    return () => clearInterval(id);
+  }, [totalSlides]);
+
+  // Ao chegar no slide clonado, remover transição, resetar para 0 e reativar transição
+  const handleTransitionEnd = () => {
+    if (currentIndex === totalSlides) {
+      setIsTransitioning(false);
+      setCurrentIndex(0);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => setIsTransitioning(true));
+      });
+    }
   };
 
   return (
@@ -37,7 +60,7 @@ const HeroCarousel: React.FC = () => {
             key={index}
             onClick={() => goToSlide(index)}
             className={`w-2 h-2 sm:w-3 sm:h-3 lg:w-3.5 lg:h-3.5 rounded-full border-2 border-primary transition-all duration-300 ${
-              currentSlide === index ? 'bg-primary scale-110' : 'bg-transparent hover:bg-primary/30'
+              currentIndex === index ? 'bg-primary scale-110' : 'bg-transparent hover:bg-primary/30'
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />
@@ -45,23 +68,29 @@ const HeroCarousel: React.FC = () => {
       </div>
       
       <div className="w-full relative overflow-hidden max-h-[85vh] lg:max-h-full">
-        {slides.map((slide, index) => (
-          <div
-            key={index}
-            className={`${currentSlide === index ? 'block' : 'hidden'}`}
-          >
-            <img
-              src={slide.image}
-              alt={slide.alt}
-              className="w-full h-auto object-contain hidden md:block"
-            />
-            <img
-              src={slide.mobileImage}
-              alt={slide.alt}
-              className="w-full h-auto object-contain block md:hidden"
-            />
-          </div>
-        ))}
+        <div
+          className="flex"
+          style={{
+            transform: `translateX(-${(currentIndex % (totalSlides + 1)) * 100}%)`,
+            transition: isTransitioning ? 'transform 500ms ease-out' : 'none',
+          }}
+          onTransitionEnd={handleTransitionEnd}
+        >
+          {trackSlides.map((slide, index) => (
+            <div key={index} className="min-w-full">
+              <img
+                src={slide.image}
+                alt={slide.alt}
+                className="w-full h-auto object-contain hidden md:block"
+              />
+              <img
+                src={slide.mobileImage}
+                alt={slide.alt}
+                className="w-full h-auto object-contain block md:hidden"
+              />
+            </div>
+          ))}
+        </div>
       </div>
       
       <button

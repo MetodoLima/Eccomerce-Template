@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const slides = [
   { image: '/Figures/CapaMobile-EccomerceIphone.svg', alt: 'Ofertas Apple' },
@@ -6,12 +6,34 @@ const slides = [
 ];
 
 const SecondaryCarousel: React.FC = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(true);
   const totalSlides = slides.length;
 
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % totalSlides);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
-  const goToSlide = (index: number) => setCurrentSlide(index);
+  const trackSlides = [...slides, slides[0]]; // clone do primeiro para loop suave
+
+  const nextSlide = () => setCurrentIndex((prev) => prev + 1);
+  const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + totalSlides) % totalSlides);
+  const goToSlide = (index: number) => setCurrentIndex(index % totalSlides);
+
+  // Auto-play: sempre avança da direita para a esquerda
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCurrentIndex((prev) => prev + 1);
+    }, 8000);
+    return () => clearInterval(id);
+  }, [totalSlides]);
+
+  // Reset suave ao chegar no clone
+  const handleTransitionEnd = () => {
+    if (currentIndex === totalSlides) {
+      setIsTransitioning(false);
+      setCurrentIndex(0);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => setIsTransitioning(true));
+      });
+    }
+  };
 
   return (
     <section className="w-full h-64 sm:h-80 lg:h-[427px] relative mt-6 sm:mt-8 lg:mt-12">
@@ -21,7 +43,7 @@ const SecondaryCarousel: React.FC = () => {
             key={index}
             onClick={() => goToSlide(index)}
             className={`w-2 h-2 sm:w-3 sm:h-3 lg:w-3.5 lg:h-3.5 rounded-full border-2 border-primary transition-all duration-300 ${
-              currentSlide === index ? 'bg-primary scale-110' : 'bg-transparent hover:bg-primary/30'
+              currentIndex === index ? 'bg-primary scale-110' : 'bg-transparent hover:bg-primary/30'
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />
@@ -29,14 +51,20 @@ const SecondaryCarousel: React.FC = () => {
       </div>
 
       <div className="w-full h-full relative overflow-hidden">
-        {slides.map((slide, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-500 ${currentSlide === index ? 'opacity-100' : 'opacity-0'}`}
-          >
-            <img src={slide.image} alt={slide.alt} className="w-full h-full object-cover" />
-          </div>
-        ))}
+        <div
+          className="flex w-full h-full"
+          style={{
+            transform: `translateX(-${(currentIndex % (totalSlides + 1)) * 100}%)`,
+            transition: isTransitioning ? 'transform 500ms ease-out' : 'none',
+          }}
+          onTransitionEnd={handleTransitionEnd}
+        >
+          {trackSlides.map((slide, index) => (
+            <div key={index} className="min-w-full h-full">
+              <img src={slide.image} alt={slide.alt} className="w-full h-full object-cover" />
+            </div>
+          ))}
+        </div>
       </div>
 
       <button
