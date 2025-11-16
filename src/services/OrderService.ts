@@ -4,6 +4,52 @@ import { CustomerInfo, Order, OrderItem } from '@/types/supabase';
 
 // Tipos importados de @/types/supabase
 
+// Função para enviar webhook do n8n
+const sendWebhookToN8n = async (order: Order): Promise<void> => {
+  const webhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL;
+  
+  if (!webhookUrl) {
+    console.warn('N8N webhook URL não está configurada. Pulando envio do webhook.');
+    return;
+  }
+
+  try {
+    const payload = {
+      orderId: order.id,
+      customerName: order.customer_name,
+      customerEmail: order.customer_email,
+      customerPhone: order.customer_phone,
+      customerAddress: order.customer_address,
+      customerCity: order.customer_city,
+      customerState: order.customer_state,
+      customerZipCode: order.customer_zip_code,
+      status: order.status,
+      totalAmount: order.total_amount,
+      notes: order.notes,
+      items: order.items,
+      storeId: order.store_id,
+      createdAt: order.created_at,
+      updatedAt: order.updated_at,
+    };
+
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      console.error(`Webhook retornou status ${response.status}: ${response.statusText}`);
+    } else {
+      console.log('Pedido enviado com sucesso para o webhook do n8n');
+    }
+  } catch (error) {
+    console.error('Erro ao enviar pedido para o webhook:', error);
+  }
+};
+
 class OrderService {
   private static instance: OrderService;
   private tableName: 'orders' = 'orders';
@@ -56,6 +102,11 @@ class OrderService {
         .single();
 
       if (error) throw error;
+
+      // Enviar webhook do n8n de forma assíncrona (não bloqueia o fluxo)
+      sendWebhookToN8n(data).catch(err => {
+        console.error('Erro ao enviar webhook:', err);
+      });
 
       return { data, error: null };
     } catch (error) {
