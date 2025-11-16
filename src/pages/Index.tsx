@@ -17,7 +17,7 @@ const Index: React.FC = () => {
 
   return (
     <div className="w-full min-h-screen bg-background">
-      <main className="w-full pt-8">
+      <main className="w-full">
         <HeroCarousel />
         {/* Nossos produtos */}
         <CollectionsSection />

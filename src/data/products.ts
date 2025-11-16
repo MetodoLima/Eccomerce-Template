@@ -4,7 +4,8 @@ export const products: Product[] = [
   {
     id: '1',
     title: 'iPhone 15 Pro',
-    price: 9299.00,
+    price: 8369.10,
+    original_price: 9299.00,
     description: 'O iPhone 15 Pro é o primeiro iPhone com design em titânio aeroespacial, usando a mesma liga que as naves espaciais para missões em Marte.',
     image_url: 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-finish-select-202309-6-1inch-naturaltitanium?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1692845702708',
     hover_image_url: 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-finish-select-202309-6-1inch-blue-titanium?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1692895169328',
@@ -17,7 +18,8 @@ export const products: Product[] = [
   {
     id: '2',
     title: 'Apple AirPods Pro (2ª geração)',
-    price: 2599.00,
+    price: 2339.10,
+    original_price: 2599.00,
     description: 'Os AirPods Pro foram totalmente redesenhados para um som de qualidade ainda mais incrível.',
     image_url: 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/MTJV3?wid=1144&hei=1144&fmt=jpeg&qlt=90&.v=1694014871985',
     hover_image_url: 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/MTJV3?wid=1144&hei=1144&fmt=jpeg&qlt=90&.v=1694014871985',
@@ -28,7 +30,8 @@ export const products: Product[] = [
   {
     id: '3',
     title: 'Apple Watch Ultra 2',
-    price: 8999.00,
+    price: 8099.10,
+    original_price: 8999.00,
     description: 'A aventura te espera. O Apple Watch mais robusto e versátil. Com uma caixa de titânio resistente, GPS de precisão e dupla frequência.',
     image_url: 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/apple-watch-ultra2-digitalmat-gallery-1-202309_GEO_BR?wid=728&hei=666&fmt=png-alpha&.v=1692820339770',
     hover_image_url: 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/apple-watch-ultra2-digitalmat-gallery-1-202309_GEO_BR?wid=728&hei=666&fmt=png-alpha&.v=1692820339770',

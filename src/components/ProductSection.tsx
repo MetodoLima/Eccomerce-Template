@@ -57,7 +57,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
           }`}
         >
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} className="w-[calc(50%-5px)] sm:w-[calc(50%-5px)] lg:w-[calc(25%-15px)] xl:w-[calc(25%-15px)] flex-shrink-0" />
           ))}
         </div>
         

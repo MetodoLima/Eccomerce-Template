@@ -18,10 +18,10 @@ const collections: CollectionItem[] = [
 const CollectionsSection: React.FC = () => {
   return (
     <section className="w-full max-w-[1140px] mx-auto py-10 px-5 max-sm:px-3">
-      <h2 className="text-center text-2xl font-semibold mb-8">Nossos produtos</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+      <h2 className="text-center text-2xl font-semibold mb-8">Nossas Coleções</h2>
+      <div className="flex gap-5 overflow-x-auto pb-4 hide-scrollbar">
         {collections.map((item) => (
-          <Link key={item.name} to={item.href} className="group">
+          <Link key={item.name} to={item.href} className="group w-[calc(50%-10px)] sm:w-[calc(50%-10px)] lg:w-[calc(25%-15px)] flex-shrink-0">
             <article className="rounded-xl shadow-soft hover:shadow-medium transition-shadow bg-white overflow-hidden">
               <div className="aspect-[4/3] w-full overflow-hidden">
                 <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
