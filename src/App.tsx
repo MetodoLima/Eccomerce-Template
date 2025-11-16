@@ -10,6 +10,7 @@ import { CartProvider } from './contexts/CartContext';
 import { CartPage } from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage.tsx';
 import SearchPage from './pages/SearchPage.tsx';
+import OrderSuccessPage from './pages/OrderSuccessPage';
 import FloatingWhatsapp from './components/FloatingWhatsapp';
 import ScrollTopButton from './components/ScrollTopButton';
 import ScrollToTop from './components/ScrollToTop';
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/produto/:id" element={<ProductPage />} />
             <Route path="/categoria/:category" element={<CategoryPage />} />
             <Route path="/busca" element={<SearchPage />} />
+            <Route path="/pedido/:id" element={<OrderSuccessPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
