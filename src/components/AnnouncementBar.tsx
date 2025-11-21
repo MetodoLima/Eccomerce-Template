@@ -15,7 +15,7 @@ const AnnouncementBar: React.FC = () => {
   const repeatCount = 2;
   const seq = Array(repeatCount).fill(messages).flat();
   return (
-    <div className="w-full bg-black text-white overflow-hidden">
+    <div className="w-full bg-[#042596] text-white overflow-hidden">
       <div className="marquee" data-ready={ready ? 'true' : undefined}>
         <div className="marquee-track">
           <div className="marquee-seq">

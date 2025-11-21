@@ -70,7 +70,7 @@ const Navbar: React.FC = () => {
             {/* Centro: Logo */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
               <Link to="/" className="inline-flex items-center" aria-label="Home">
-                <img src="/Joias.svg" alt="Logo" className="h-10 sm:h-12 w-auto" />
+                <img src="/Construcao.svg" alt="Logo" className="h-10 sm:h-12 w-auto" />
               </Link>
             </div>
 
