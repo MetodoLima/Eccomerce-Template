@@ -3,12 +3,12 @@ import React, { useState, useEffect } from 'react';
 const slides = [
   {
     image: "/Figures/Capa 1-EccomerceIphone.svg",
-    mobileImage: "/Figures/BannerMobileNew.svg",
+    mobileImage: "/Figures/BannerMobileJoias1.svg",
     alt: "iPad Air M3"
   },
   {
     image: "/Figures/Capa2-EccomerceIphone.svg",
-    mobileImage: "/Figures/BannerMobileNew.svg",
+    mobileImage: "/Figures/BannerMobileJoias2.svg",
     alt: "iPhone 16 Pro Max"
   }
 ];

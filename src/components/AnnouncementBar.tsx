@@ -15,7 +15,7 @@ const AnnouncementBar: React.FC = () => {
   const repeatCount = 2;
   const seq = Array(repeatCount).fill(messages).flat();
   return (
-    <div className="w-full bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] overflow-hidden">
+    <div className="w-full bg-black text-white overflow-hidden">
       <div className="marquee" data-ready={ready ? 'true' : undefined}>
         <div className="marquee-track">
           <div className="marquee-seq">
@@ -24,7 +24,7 @@ const AnnouncementBar: React.FC = () => {
                 <span className="whitespace-nowrap text-sm sm:text-base font-montserrat font-semibold tracking-wide uppercase">
                   {msg}
                 </span>
-                <span aria-hidden className="px-8 text-[hsl(var(--primary-foreground))]/70">•</span>
+                <span aria-hidden className="px-8 text-white/70">•</span>
               </React.Fragment>
             ))}
           </div>
@@ -34,7 +34,7 @@ const AnnouncementBar: React.FC = () => {
                 <span className="whitespace-nowrap text-sm sm:text-base font-montserrat font-semibold tracking-wide uppercase">
                   {msg}
                 </span>
-                <span aria-hidden className="px-8 text-[hsl(var(--primary-foreground))]/70">•</span>
+                <span aria-hidden className="px-8 text-white/70">•</span>
               </React.Fragment>
             ))}
           </div>
