@@ -1,10 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Filter, Grid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ProductCard from '@/components/ProductCard';
-import { products as allProducts } from '@/data/products';
+import { Product } from '@/types';
+import { ProductService } from '@/services/ProductService';
 
 const getCategoryName = (category: string) => {
   const names = {
@@ -28,6 +29,9 @@ const CategoryPage: React.FC = () => {
   const [sortBy, setSortBy] = useState('relevance');
   const [availability, setAvailability] = useState<'all' | 'in'>('all');
   const [priceRange, setPriceRange] = useState<'all' | 'low' | 'mid' | 'high'>('all');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   if (!category) {
     return (
@@ -43,6 +47,25 @@ const CategoryPage: React.FC = () => {
   }
 
   const categoryName = getCategoryName(category);
+
+  useEffect(() => {
+    let active = true;
+    const run = async () => {
+      setLoading(true);
+      setError(null);
+      const { data, error } = await ProductService.getByCategory(category);
+      if (!active) return;
+      if (error) {
+        setProducts([]);
+        setError('Erro ao carregar produtos');
+      } else {
+        setProducts(data || []);
+      }
+      setLoading(false);
+    };
+    run();
+    return () => { active = false; };
+  }, [category]);
   const categoryImages: Record<string, string> = {
     iphones: 'https://api.builder.io/api/v1/image/assets/TEMP/156da650df89e98c77fd877f9456e703a728d621?width=1200',
     airpods: 'https://api.builder.io/api/v1/image/assets/TEMP/354cd22a1c3769d5bcb15041cd6198bcb15a0c30?width=1200',
@@ -55,7 +78,7 @@ const CategoryPage: React.FC = () => {
     seminovos: 'https://api.builder.io/api/v1/image/assets/TEMP/295bc24ae9694cbec45ba422bcbc72ab1f6ca599?width=1200',
   };
 
-  const baseProducts = useMemo(() => allProducts.filter(p => p.category.toLowerCase() === category.toLowerCase()), [category]);
+  const baseProducts = useMemo(() => products, [products]);
 
   const filteredProducts = useMemo(() => {
     let list = [...baseProducts];
@@ -190,7 +213,11 @@ const CategoryPage: React.FC = () => {
         </div>
 
         {/* Products grid */}
-        {filteredProducts.length > 0 ? (
+        {loading ? (
+          <div className="text-center py-12">Carregando produtos...</div>
+        ) : error ? (
+          <div className="text-center py-12">{error}</div>
+        ) : filteredProducts.length > 0 ? (
           <div className={`grid gap-4 sm:gap-5 ${
             viewMode === 'grid' 
               ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4' 

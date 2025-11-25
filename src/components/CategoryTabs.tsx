@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ProductCard from './ProductCard';
-import { products as allProducts } from '@/data/products';
+import { Product } from '@/types';
+import { ProductService } from '@/services/ProductService';
 
 const CATEGORIES = [
   { key: 'iphones', label: 'iPhones' },
@@ -10,9 +11,20 @@ const CATEGORIES = [
 
 const CategoryTabs: React.FC = () => {
   const [active, setActive] = useState<typeof CATEGORIES[number]['key']>(CATEGORIES[0].key);
+  const [items, setItems] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const filtered = useMemo(() => {
-    return allProducts.filter(p => p.category === active);
+  useEffect(() => {
+    let activeFlag = true;
+    const run = async () => {
+      setLoading(true);
+      const { data } = await ProductService.getByCategory(active);
+      if (!activeFlag) return;
+      setItems((data || []).slice(0, 12));
+      setLoading(false);
+    };
+    run();
+    return () => { activeFlag = false; };
   }, [active]);
 
   return (
@@ -32,9 +44,13 @@ const CategoryTabs: React.FC = () => {
 
       <div className="relative">
         <div className="flex gap-5 overflow-x-auto pb-4 hide-scrollbar">
-          {filtered.map(prod => (
-            <ProductCard key={prod.id} product={prod} className="w-[calc(50%-10px)] sm:w-[calc(50%-10px)] lg:w-[calc(25%-15px)] flex-shrink-0" />
-          ))}
+          {loading ? (
+            <div className="py-6 px-3 text-sm text-muted-foreground">Carregando...</div>
+          ) : (
+            items.map(prod => (
+              <ProductCard key={prod.id} product={prod} className="w-[calc(50%-10px)] sm:w-[calc(50%-10px)] lg:w-[calc(25%-15px)] flex-shrink-0" />
+            ))
+          )}
         </div>
       </div>
     </section>

@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Heart, Share2, ShoppingCart, Truck, Shield, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { products } from '@/data/products';
 import { useCart } from '@/contexts/CartContext';
 import toast from 'react-hot-toast';
+import { Product } from '@/types';
+import { ProductService } from '@/services/ProductService';
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat('pt-BR', {
@@ -20,6 +21,9 @@ const ProductPage: React.FC = () => {
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   if (!id) {
     return (
@@ -32,9 +36,36 @@ const ProductPage: React.FC = () => {
     );
   }
 
-  const product = products.find(p => p.id === id);
+  useEffect(() => {
+    let active = true;
+    const run = async () => {
+      setLoading(true);
+      setError(null);
+      const { data, error } = await ProductService.getById(id);
+      if (!active) return;
+      if (error) {
+        setError('Erro ao carregar produto');
+        setProduct(null);
+      } else {
+        setProduct(data);
+      }
+      setLoading(false);
+    };
+    run();
+    return () => {
+      active = false;
+    };
+  }, [id]);
 
-  if (!product) {
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 text-center">
+        <h1 className="text-2xl font-bold text-foreground mb-2">Carregando produto...</h1>
+      </div>
+    );
+  }
+
+  if (error || !product) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 text-center">
         <h1 className="text-2xl font-bold text-foreground mb-4">Produto não encontrado</h1>

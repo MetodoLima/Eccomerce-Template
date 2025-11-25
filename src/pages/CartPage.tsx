@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Trash2, Plus, Minus, ArrowLeft, ShoppingCart } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import ProductSection from '@/components/ProductSection';
-import { products } from '@/data/products';
+import { Product } from '@/types';
+import { ProductService } from '@/services/ProductService';
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price);
@@ -15,13 +16,32 @@ const formatPrice = (price: number) => {
 export const CartPage: React.FC = () => {
   const { items, total, updateQuantity, removeFromCart } = useCart();
 
-  const cartProductIds = new Set(items.map(i => i.id));
-  const categories = new Set(items.map(i => i.category));
-  const related = products
-    .filter(p => !cartProductIds.has(p.id) && (categories.size === 0 || categories.has(p.category)))
-    .slice(0, 8);
-  const fallback = products.filter(p => p.isFeatured || p.isTopRated || p.isNew).slice(0, 8);
-  const relatedProducts = related.length > 0 ? related : fallback;
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [loadingRelated, setLoadingRelated] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const run = async () => {
+      setLoadingRelated(true);
+      const cartIds = items.map(i => i.id);
+      const cats = Array.from(new Set(items.map(i => i.category)));
+
+      let picked: Product[] = [];
+      if (cats.length > 0) {
+        const { data } = await ProductService.getByCategories(cats, cartIds, 8);
+        picked = data || [];
+      }
+      if (picked.length === 0) {
+        const { data } = await ProductService.getFeatured(8);
+        picked = data || [];
+      }
+      if (!active) return;
+      setRelatedProducts(picked);
+      setLoadingRelated(false);
+    };
+    run();
+    return () => { active = false; };
+  }, [items]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -103,7 +123,9 @@ export const CartPage: React.FC = () => {
           </div>
         )}
 
-        {relatedProducts.length > 0 && (
+        {loadingRelated ? (
+          <div className="mt-24 text-center text-sm text-muted-foreground">Carregando recomendações...</div>
+        ) : relatedProducts.length > 0 && (
           <div className="mt-24">
             <ProductSection centerTitle title="Você também pode gostar" products={relatedProducts} />
           </div>

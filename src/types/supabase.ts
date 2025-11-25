@@ -42,6 +42,7 @@ export interface Order {
 // Tipos para as tabelas do Supabase
 export type Tables = {
   orders: Order;
+  products: Product;
   // Podemos adicionar mais tabelas aqui conforme necessário
 };
 

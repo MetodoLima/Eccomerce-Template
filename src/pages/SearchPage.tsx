@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { products } from '@/data/products';
 import ProductCard from '@/components/ProductCard';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { Product } from '@/types';
+import { ProductService } from '@/services/ProductService';
 
 const normalize = (s: string) => s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
 
@@ -11,15 +12,31 @@ const SearchPage: React.FC = () => {
   const [params] = useSearchParams();
   const q = params.get('q')?.trim() || '';
 
-  const results = useMemo(() => {
-    if (!q) return [] as typeof products;
-    const nq = normalize(q);
-    return products.filter(p => {
-      const inTitle = normalize(p.title).includes(nq);
-      const inSku = normalize(p.sku).includes(nq);
-      const inCategory = normalize(p.category).includes(nq);
-      return inTitle || inSku || inCategory;
-    });
+  const [results, setResults] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    const run = async () => {
+      if (!q) {
+        setResults([]);
+        return;
+      }
+      setLoading(true);
+      setError(null);
+      const { data, error } = await ProductService.search(q);
+      if (!active) return;
+      if (error) {
+        setError('Erro ao buscar produtos');
+        setResults([]);
+      } else {
+        setResults(data || []);
+      }
+      setLoading(false);
+    };
+    run();
+    return () => { active = false; };
   }, [q]);
 
   return (
@@ -38,6 +55,12 @@ const SearchPage: React.FC = () => {
 
         {!q ? (
           <p className="text-sm text-muted-foreground">Digite um termo na busca para encontrar produtos.</p>
+        ) : loading ? (
+          <p className="text-sm text-muted-foreground">Carregando...</p>
+        ) : error ? (
+          <div className="text-center py-16">
+            <p className="text-lg font-medium text-gray-900">{error}</p>
+          </div>
         ) : results.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-lg font-medium text-gray-900">Nenhum produto encontrado.</p>

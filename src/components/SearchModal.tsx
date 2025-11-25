@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { products } from '@/data/products';
 import { Dialog, DialogTopContent, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Search, X } from 'lucide-react';
+import { Product } from '@/types';
+import { ProductService } from '@/services/ProductService';
 
 const normalize = (s: string) => s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
 
@@ -14,9 +15,19 @@ export const SearchModal: React.FC = () => {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const categories = useMemo(() => {
-    const set = new Set(products.map(p => p.category));
-    return Array.from(set);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [results, setResults] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const run = async () => {
+      const { data } = await ProductService.getCategories();
+      if (!active) return;
+      setCategories(data || []);
+    };
+    run();
+    return () => { active = false; };
   }, []);
 
   const categoryMatches = useMemo(() => {
@@ -25,14 +36,18 @@ export const SearchModal: React.FC = () => {
     return categories.filter(c => normalize(c).includes(nq)).slice(0, 5);
   }, [q, categories]);
 
-  const results = useMemo(() => {
-    if (!q) return [] as typeof products;
-    const nq = normalize(q);
-    return products.filter(p =>
-      normalize(p.title).includes(nq) ||
-      normalize(p.sku).includes(nq) ||
-      normalize(p.category).includes(nq)
-    ).slice(0, 6);
+  useEffect(() => {
+    let active = true;
+    const run = async () => {
+      if (!q) { setResults([]); return; }
+      setLoading(true);
+      const { data } = await ProductService.search(q, 6);
+      if (!active) return;
+      setResults(data || []);
+      setLoading(false);
+    };
+    run();
+    return () => { active = false; };
   }, [q]);
 
   useEffect(() => {
@@ -110,7 +125,9 @@ export const SearchModal: React.FC = () => {
             {/* Produtos */}
             <div className="sm:col-span-2">
               <div className="text-sm font-semibold text-muted-foreground px-2 mb-2">PRODUTOS</div>
-              {q && results.length === 0 ? (
+              {q && loading ? (
+                <div className="px-3 py-6 text-sm text-muted-foreground border rounded-md">Carregando...</div>
+              ) : q && results.length === 0 ? (
                 <div className="px-3 py-6 text-sm text-muted-foreground border rounded-md">Nenhum produto encontrado.</div>
               ) : (
                 <ul className="divide-y rounded-md border">
